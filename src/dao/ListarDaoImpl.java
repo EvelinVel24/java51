@@ -1,22 +1,23 @@
 package dao;
 
-import conexion.AdministradorConexion;
-import dto.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import conexion.AdministradorConexion;
+import dto.Usuario;
+
 public class ListarDaoImpl implements ListarDao {
+
     @Override
     public List<Usuario> listarUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT ID_USUARIO, NOMBRE, CLAVE, RUT, DV FROM USUARIO";
+        List<Usuario> usuarios = new ArrayList<Usuario>();
+        String query = "SELECT ID_USUARIO, NOMBRE, CLAVE, RUT, DV FROM USUARIO";
 
-        try (Connection conn = AdministradorConexion.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conexion = AdministradorConexion.obtenerConexion();
+             PreparedStatement ps = conexion.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -26,11 +27,14 @@ public class ListarDaoImpl implements ListarDao {
                 usuario.setClave(rs.getString("CLAVE"));
                 usuario.setRut(rs.getLong("RUT"));
                 usuario.setDv(rs.getString("DV").charAt(0));
+
                 usuarios.add(usuario);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return usuarios;
     }
 }
+
